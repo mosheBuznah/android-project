@@ -18,7 +18,7 @@
         android:src="@drawable/social_media_logo" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/login_username"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -36,7 +36,7 @@
         />
 
     <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:id="@+id/login_password"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -55,7 +55,7 @@
        />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/login_button"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:text="@string/login"
