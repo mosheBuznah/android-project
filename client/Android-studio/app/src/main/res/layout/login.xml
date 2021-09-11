@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".Login"
-    android:background="#FFFFFF">
+    android:background="@drawable/border"
+    android:layout_margin="10dp">
 
     <ImageView
         android:id="@+id/imageView"
@@ -23,7 +24,7 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:background="@drawable/custom_input"
-        android:drawableLeft="@drawable/ic_account"
+        android:drawableStart="@drawable/ic_account"
         android:drawablePadding="12dp"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
@@ -31,7 +32,6 @@
         android:inputType="textPersonName"
         android:hint="@string/username"
         android:layout_marginStart="60dp"
-        android:layout_marginLeft="60dp"
         android:layout_marginTop="50dp"
         />
 
@@ -44,11 +44,10 @@
         android:hint="@string/password"
 
         android:layout_marginStart="60dp"
-        android:layout_marginLeft="60dp"
         android:layout_marginTop="10dp"
 
         android:background="@drawable/custom_input"
-        android:drawableLeft="@drawable/ic_lock"
+        android:drawableStart="@drawable/ic_lock"
         android:drawablePadding="12dp"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
@@ -60,8 +59,9 @@
         android:layout_height="wrap_content"
         android:text="@string/login"
         android:layout_marginStart="60dp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="10dp"/>
+
+        android:layout_marginTop="10dp"
+        />
 
     <TextView
         android:id="@+id/textView"
@@ -70,7 +70,6 @@
         android:text="@string/or"
 
         android:layout_marginStart="65dp"
-        android:layout_marginLeft="65dp"
         android:layout_marginTop="15dp"/>
 
     <TextView
@@ -80,21 +79,20 @@
         android:text="@string/login_in_with_google"
 
         android:layout_marginStart="150dp"
-        android:layout_marginLeft="150dp"
         android:layout_marginTop="20dp"
         android:textSize="16sp"
         android:textColor="#0000FF"/>
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/tv_forgotPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/forgot_password"
 
         android:layout_marginStart="160dp"
-        android:layout_marginLeft="160dp"
         android:layout_marginTop="10dp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/black"
+        android:tooltipText="Send an email"/>
 
     <TextView
         android:id="@+id/textView4"
@@ -103,7 +101,6 @@
         android:text="@string/don_t_have_an_account_sign_up"
 
         android:layout_marginStart="80dp"
-        android:layout_marginLeft="80dp"
         android:layout_marginTop="50dp"
         android:textSize="17sp"
         android:textColor="@color/black"/>
