@@ -1,6 +1,7 @@
 #include "Communicator.h"
 #pragma warning(disable : 4996)
-
+#include <chrono>
+#include <thread>
 
 Communicator::Communicator(std::string SERVER_IP, int SERVER_PORT)
 {
@@ -92,36 +93,7 @@ void Communicator::handleNewClient(SOCKET _clientSocket)
 		printf("message from client: ");
 		puts(buffer);
 		//send(_clientSocket, "recieve!!!", 20, 0);
-		
-
-
-
-		int sock = 0, valread;
-		struct sockaddr_in serv_addr;
-		//char* hello = "Hello from client";
-		char buffer[1024] = { 0 };
-		if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-		{
-			printf("\n Socket creation error \n");
-			return;
-		}
-
-		serv_addr.sin_family = AF_INET;
-		serv_addr.sin_port = htons(3001);
-
-		// Convert IPv4 and IPv6 addresses from text to binary form
-		//inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)
-		if (inet_pton(AF_INET, "10.100.102.22", &serv_addr.sin_addr) <= 0)
-		{
-			printf("\nInvalid address/ Address not supported \n");
-			return;
-		}
-
-		if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
-		{
-			printf("\nConnection Failed \n");
-			return;
-		}
-		send(sock, "message", strlen("message"), 0);
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		send(_clientSocket, "recieve message\n", strlen("recieve message\n") + 1, 0);
 	}
 }

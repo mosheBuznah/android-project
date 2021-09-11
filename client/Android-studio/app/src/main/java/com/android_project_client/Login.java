@@ -12,6 +12,8 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -19,6 +21,9 @@ public class Login extends AppCompatActivity {
     EditText userName;
     EditText password;
     Button loginButton;
+    Socket client_sock = null;
+    String message_from_server = "";
+    Client c;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +33,7 @@ public class Login extends AppCompatActivity {
         userName = findViewById(R.id.login_username);
         password = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button);
+        c = new Client("10.100.102.22", 3000);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view)
@@ -36,8 +42,6 @@ public class Login extends AppCompatActivity {
             }
         });
 
-        Thread thread = new Thread(new Server());
-        thread.start();
 
     }
 
@@ -47,13 +51,74 @@ public class Login extends AppCompatActivity {
         String passwordStr = password.getText().toString();
 
         System.out.println("woowwwwwwwwwwwwwwwwwwww");
-        Client client = new Client();
-        client.execute(userNameStr+"&"+passwordStr);
 
+
+        c.sendMessage(userNameStr+"&"+passwordStr);
+        c.recv();
 
     }
 
-    class Server implements Runnable
+    private void createSocket()
+    {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    client_sock = client_sock == null ? new Socket("10.100.102.22", 3000): client_sock;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
+    }
+
+    private void sendMessage(final String msg) {
+
+        final Handler handler = new Handler();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+                    OutputStream out = client_sock.getOutputStream();
+
+                    PrintWriter output = new PrintWriter(out);
+
+                    output.println(msg);
+                    output.flush();
+                 //   output.close();
+                   // out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
+    }
+
+    private void recv()
+    {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    BufferedReader input = new BufferedReader(new InputStreamReader(client_sock.getInputStream()));
+                    message_from_server = input.readLine();
+                    System.out.println("From server: "+message_from_server);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
+    }
+
+    /*class Server implements Runnable
     {
         Socket s;
         ServerSocket ss;
@@ -91,7 +156,7 @@ public class Login extends AppCompatActivity {
 
             }
 
-    }
+    }*/
 
     public void make_toast(String message)
     {
