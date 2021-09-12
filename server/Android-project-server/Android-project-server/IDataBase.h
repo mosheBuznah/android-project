@@ -3,6 +3,7 @@
 
 class IDataBase
 {
+public:
 	/*
 	Open a Database
 	If there is no db we will create a new db one
