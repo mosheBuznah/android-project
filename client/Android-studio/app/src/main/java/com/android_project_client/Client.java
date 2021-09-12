@@ -14,9 +14,10 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 public class Client {
-    private String m_message_from_server = "";
+    private byte[] m_message_from_server;
     private Socket m_client_sock = null;
     private String m_ip = "";
     private int m_port = 0;
@@ -26,6 +27,11 @@ public class Client {
         m_ip = ip;
         m_port = port;
         createSocket();
+    }
+
+    public byte[] getMessageFromServer()
+    {
+        return m_message_from_server;
     }
 
     public void createSocket()
@@ -46,7 +52,7 @@ public class Client {
 
     }
 
-    public void sendMessage(final String msg) {
+    public void sendMessage(final byte[] msg) {
 
         final Handler handler = new Handler();
         Thread thread = new Thread(new Runnable() {
@@ -62,7 +68,7 @@ public class Client {
 
                     PrintWriter output = new PrintWriter(out);
 
-                    output.println(msg);
+                    output.print(msg);
                     output.flush();
                     //   output.close();
                     // out.close();
@@ -87,8 +93,8 @@ public class Client {
                         System.out.println("wait for socket...");
                     }
                     BufferedReader input = new BufferedReader(new InputStreamReader(m_client_sock.getInputStream()));
-                    m_message_from_server = input.readLine();
-                    System.out.println("From server: "+m_message_from_server);
+                    m_message_from_server = input.readLine().getBytes();
+                    System.out.println("From server: ");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

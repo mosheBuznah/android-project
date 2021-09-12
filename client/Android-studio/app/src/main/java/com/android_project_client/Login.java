@@ -13,6 +13,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,6 +23,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 
 import android.text.method.LinkMovementMethod;
 import android.view.View;
@@ -54,6 +58,7 @@ public class Login extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         c = new Client("10.100.102.22", 3000);
 
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view)
             {
@@ -80,12 +85,28 @@ public class Login extends AppCompatActivity {
         String userNameStr = userName.getText().toString();
         String passwordStr = password.getText().toString();
 
-        System.out.println("woowwwwwwwwwwwwwwwwwwww");
+        JSONObject j = new JSONObject();
+        try {
+            j.put("userName", userNameStr);
+            j.put("password", passwordStr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-
-        c.sendMessage(userNameStr+"&"+passwordStr);
+        c.sendMessage(RequestSerializer.create_message((byte) Constants.LOGIN_REQUEST, j.toString()));
         c.recv();
 
+        int status = 0;
+        try {
+            status = (int) Objects.requireNonNull(RequestDeserializer.getJsonData(c.getMessageFromServer())).get("status");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (status == 1)
+        {
+            System.out.println("enter");
+        }
     }
 
     private void createSocket()
@@ -147,47 +168,6 @@ public class Login extends AppCompatActivity {
 
         thread.start();
     }
-
-    /*class Server implements Runnable
-    {
-        Socket s;
-        ServerSocket ss;
-        InputStreamReader isr;
-        BufferedReader bufferedReader;
-        Handler h = new Handler();
-
-        String message;
-
-        @Override
-        public void run() {
-            try {
-                ss = new ServerSocket(3001);
-                while (true) {
-                    System.out.println("recieve message = ");
-                    s = ss.accept();
-                    isr = new InputStreamReader(s.getInputStream());
-                    bufferedReader = new BufferedReader(isr);
-                    message = bufferedReader.readLine();
-
-                    h.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Login l = new Login();
-                            //  l.make_toast(message);
-                            System.out.println("recieve message = "+message);
-                            make_toast(message);
-                        }
-                    });
-                }
-            }catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("fucking errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
-            }
-
-            }
-
-    }*/
-
 
     public void make_toast(String message)
     {
