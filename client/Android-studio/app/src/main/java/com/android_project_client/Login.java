@@ -21,6 +21,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import android.text.method.LinkMovementMethod;
+import android.view.View;
+import android.widget.TextView;
 
 public class Login extends AppCompatActivity {
     EditText userName;
@@ -29,8 +32,8 @@ public class Login extends AppCompatActivity {
     Socket client_sock = null;
     String message_from_server = "";
     Client c;
-
     TextView signUpTv;
+    TextView forgotPasswordTv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +61,17 @@ public class Login extends AppCompatActivity {
             }
         });
 
+        forgotPasswordTv = findViewById(R.id.tv_forgotPassword);
+
+        forgotPasswordTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent go = new Intent(Login.this, ForgotPassword.class);
+                startActivity(go);
+            }
+        });
+
+        forgotPasswordTv.setMovementMethod(LinkMovementMethod.getInstance());
 
     }
 
@@ -173,6 +187,7 @@ public class Login extends AppCompatActivity {
             }
 
     }*/
+
 
     public void make_toast(String message)
     {
