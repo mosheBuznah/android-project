@@ -29,7 +29,7 @@ public:
 	std::vector<std::string> getUserDetails(std::string userName);
 private:
 	IDataBase* m_database = new SqliteDataBase();
-	std::vector<LoggedUser> m_loggedUsers;
+	//std::vector<LoggedUser> m_loggedUsers;
 
 	bool isUserConnected(std::string username);
 

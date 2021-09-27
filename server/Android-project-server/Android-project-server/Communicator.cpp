@@ -2,6 +2,8 @@
 #pragma warning(disable : 4996)
 #include <chrono>
 #include <thread>
+#include "SocketHelper.h"
+#include "LoginRequestHandler.h"
 
 Communicator::Communicator(std::string SERVER_IP, int SERVER_PORT)
 {
@@ -9,6 +11,7 @@ Communicator::Communicator(std::string SERVER_IP, int SERVER_PORT)
 	this->m_SERVER_PORT = SERVER_PORT;
 	this->activeThreads = 0;
 	this->m_serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	this->m_handleFactory = new RequestHandlerFactory();
 
 	if (this->m_serverSocket == INVALID_SOCKET)
 		throw std::exception(__FUNCTION__ " - socket");
@@ -65,18 +68,79 @@ void Communicator::accept()
 	activeThreads++;
 	std::cout << "Active threads - {" << activeThreads << "}" << std::endl;
 
+	LoginRequestHandler* clientLoginHandler = m_handleFactory->createLoginRequestHandler();
+	m_clients.insert(std::make_pair(client_socket, clientLoginHandler));
+	std::cout << "[" << m_SERVER_IP << ":" << m_SERVER_PORT << "] " << "New Connection...Openning new Thread" << std::endl;
+	activeThreads++;
+	std::cout << "Active threads - {" << activeThreads << "}" << std::endl;
+
 	std::thread clientThread(&Communicator::handleNewClient, this, client_socket);
 	clientThread.detach();
+
 }
 void Communicator::handleNewClient(SOCKET _clientSocket)
 {
-	char buffer[256] = { 0 };
+	RequestInfo requestInfoFromClient = { 0 };
+
+	int index = 0;
+	//send(_clientSocket, "Hello User", 11, 0);
 	while (true)
 	{
-		recv(_clientSocket, buffer, 1024, 0);
-		printf("message from client: ");
-		puts(buffer);
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-		send(_clientSocket, "recieve message\n", strlen("recieve message\n") + 1, 0);
+		int code = 0;
+		int jsonLen = 0;
+		try
+		{
+			 code = SocketHelper::getCode(_clientSocket);
+			std::cout << "code ===================== " << code << "\n\n\n";
+
+
+			if (code == 0) {
+				//WSAGetLastError();
+				continue;
+			}
+
+			/*if (code != GET_ROOMS && code != GET_HIGH_SCORE_RESPONSE
+				&& code != GET_PERSONAL_STATS_RESPONSE && code != LOGOUT && code != LEAVE_ROOM
+				&& code != CLOSE_ROOM && code != START_GAME && code != GET_ROOM_STATE && code != GET_QUESTION_REQUEST
+				&& code != GET_GAME_RESULT_REQUEST)
+			{
+				jsonLen = SocketHelper::getJsonLen(_clientSocket);
+				if (index == 0)
+					std::cout << jsonLen << "\n";
+				requestInfoFromClient.buffer = (unsigned char*)SocketHelper::getJsonData(_clientSocket, jsonLen);
+
+			}*/
+		}
+		catch (...) {
+			std::cout << "error" << std::endl;
+			m_clients.erase(_clientSocket);
+			break; //socket was closed
+		}
+
+		try
+		{
+			index++;
+			requestInfoFromClient.id = code;
+			requestInfoFromClient.sizeJsonMessage = jsonLen;
+			time(&requestInfoFromClient.curtime);
+
+			std::cout << "requestInfoFromClient.buffer+5: " << requestInfoFromClient.buffer << "\n\n";
+			RequestResult responseToClient = m_clients[_clientSocket]->handleRequest(requestInfoFromClient);
+			m_clients[_clientSocket] = responseToClient.newHandler;
+
+			std::cout << "code: " << code << std::endl;
+			std::cout << "len message " << requestInfoFromClient.sizeJsonMessage << "\n";
+			std::cout << "message from client: " << requestInfoFromClient.buffer << "\n";
+			std::cout << "message to client: " << (char*)responseToClient.response + 5 << "\n";
+
+			SocketHelper::sendMessageByProtocol(_clientSocket, code, (char*)responseToClient.response + 5);
+		}
+		catch (std::exception& e) {
+			std::cout << e.what() << std::endl;
+		}
 	}
+
+	activeThreads--;
+	closesocket(_clientSocket);//100% close SOCKET connection
+
 }

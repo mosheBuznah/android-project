@@ -1,6 +1,13 @@
 #pragma once
 
 #include "WSAInitializer.h"
+#include <WS2tcpip.h>
+#include <stdio.h>
+#include <string.h>
+#include "RequestsStructs.h"
+#include "ResponsesStructs.h"
+#include "Constants.h"
+#include "RequestHandlerFactory.h"
 #include <WinSock2.h>
 #include <Windows.h>
 #include <map>
@@ -8,13 +15,7 @@
 #include <iostream>
 #include <thread>
 
-#include <WS2tcpip.h>
-#include <stdio.h>
-//#include <sys/socket.h>
-//#include <arpa/inet.h>
-//#include <unistd.h>
-#include <string.h>
-
+class IRequestHandler;
 
 class Communicator
 {
@@ -28,7 +29,8 @@ private:
 	int activeThreads;
 	int m_SERVER_PORT;
 	SOCKET m_serverSocket;
-	//std::map<SOCKET, IRequestHandler> m_clients;//<SOCKET <TCP, IPV4>, IRequestHandler - OBJECT>
+	std::map<SOCKET, IRequestHandler*> m_clients;//<SOCKET <TCP, IPV4>, IRequestHandler - OBJECT>
+	RequestHandlerFactory* m_handleFactory;
 
 	void accept();
 	void bindAndListen();

@@ -65,6 +65,11 @@ bool LoginManager::login(std::string userName, std::string password)
 	return false;
 }
 
+bool LoginManager::isUserConnected(std::string username)
+{
+	return false;
+}
+
 /*
 bool LoginManager::logout(std::string userName)
 {
