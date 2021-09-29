@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import android.text.method.LinkMovementMethod;
@@ -56,9 +58,9 @@ public class Login extends AppCompatActivity {
         userName = findViewById(R.id.login_username);
         password = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button);
+
+
         c = new Client("10.100.102.22", 3000);
-
-
         loginButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view)
             {
@@ -86,16 +88,18 @@ public class Login extends AppCompatActivity {
         String passwordStr = password.getText().toString();
 
         JSONObject j = new JSONObject();
-        try {
+       /* try {
             j.put("userName", userNameStr);
             j.put("password", passwordStr);
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        c.sendMessage(RequestSerializer.create_message((byte) Constants.LOGIN_REQUEST, j.toString()));
+        //c.sendMessage(RequestSerializer.create_message((byte) Constants.LOGIN_REQUEST, j.toString()));
+        c.sendMessage("moshe");
         c.recv();
-
+        Toast.makeText(this, new String(c.getMessageFromServer(), StandardCharsets.UTF_8), Toast.LENGTH_LONG).show();
+        /*
         int status = 0;
         try {
             status = (int) Objects.requireNonNull(RequestDeserializer.getJsonData(c.getMessageFromServer())).get("status");
@@ -105,9 +109,15 @@ public class Login extends AppCompatActivity {
 
         if (status == 1)
         {
-            System.out.println("enter");
+            Intent go = new Intent(Login.this, Posts.class);
+            go.putExtra("client", c);
+            startActivity(go);
         }
+        else
+            Toast.makeText(this, "User not exist in the database", Toast.LENGTH_SHORT).show();
+        */
     }
+
 
     private void createSocket()
     {

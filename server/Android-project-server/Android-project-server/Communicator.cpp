@@ -88,9 +88,13 @@ void Communicator::handleNewClient(SOCKET _clientSocket)
 	{
 		int code = 0;
 		int jsonLen = 0;
+
+		char buff[1024] = { 0 };
+		recv(_clientSocket, buff, 1024, 0);
+		send(_clientSocket, "mosheResponse", 15, 0);
 		try
 		{
-			 code = SocketHelper::getCode(_clientSocket);
+			 //code = SocketHelper::getCode(_clientSocket);
 			std::cout << "code ===================== " << code << "\n\n\n";
 
 
@@ -119,21 +123,24 @@ void Communicator::handleNewClient(SOCKET _clientSocket)
 
 		try
 		{
+			//jsonLen = SocketHelper::getJsonLen(_clientSocket);
+			//requestInfoFromClient.buffer = (unsigned char*)SocketHelper::getJsonData(_clientSocket, jsonLen);
 			index++;
 			requestInfoFromClient.id = code;
 			requestInfoFromClient.sizeJsonMessage = jsonLen;
 			time(&requestInfoFromClient.curtime);
 
 			std::cout << "requestInfoFromClient.buffer+5: " << requestInfoFromClient.buffer << "\n\n";
-			RequestResult responseToClient = m_clients[_clientSocket]->handleRequest(requestInfoFromClient);
-			m_clients[_clientSocket] = responseToClient.newHandler;
+			//RequestResult responseToClient = m_clients[_clientSocket]->handleRequest(requestInfoFromClient);
+			//m_clients[_clientSocket] = responseToClient.newHandler;
 
 			std::cout << "code: " << code << std::endl;
 			std::cout << "len message " << requestInfoFromClient.sizeJsonMessage << "\n";
 			std::cout << "message from client: " << requestInfoFromClient.buffer << "\n";
-			std::cout << "message to client: " << (char*)responseToClient.response + 5 << "\n";
+			//std::cout << "message to client: " << (char*)responseToClient.response + 5 << "\n";
 
-			SocketHelper::sendMessageByProtocol(_clientSocket, code, (char*)responseToClient.response + 5);
+			//SocketHelper::sendMessageByProtocol(_clientSocket, code, (char*)responseToClient.response + 5);
+			
 		}
 		catch (std::exception& e) {
 			std::cout << e.what() << std::endl;

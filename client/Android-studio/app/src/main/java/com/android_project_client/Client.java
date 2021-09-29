@@ -11,12 +11,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
-public class Client {
+public class Client implements Serializable {
+
+    public static class ChildClass implements Serializable {
+
+        public ChildClass() {}
+    }
     private byte[] m_message_from_server;
     private Socket m_client_sock = null;
     private String m_ip = "";
@@ -52,7 +58,7 @@ public class Client {
 
     }
 
-    public void sendMessage(final byte[] msg) {
+    public void sendMessage(final String msg) {
 
         final Handler handler = new Handler();
         Thread thread = new Thread(new Runnable() {
